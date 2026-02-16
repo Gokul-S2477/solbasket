@@ -1,0 +1,20 @@
+﻿<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#EAF4FF"/><stop offset="100%" stop-color="#DEE9FF"/></linearGradient>
+    <linearGradient id="arc" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4D9FFF"/><stop offset="100%" stop-color="#8F87FF"/></linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <g stroke="url(#arc)" stroke-width="8" fill="none">
+    <path d="M260 770C340 560 520 430 760 410"/>
+    <path d="M760 410C980 390 1170 500 1330 720"/>
+    <path d="M310 670C440 560 570 520 700 520" opacity="0.6"/>
+    <path d="M830 520C980 540 1110 610 1240 750" opacity="0.6"/>
+  </g>
+  <g>
+    <circle cx="760" cy="410" r="70" fill="#FFFFFF" stroke="#8FB9F2" stroke-width="5"/>
+    <circle cx="260" cy="770" r="40" fill="#E5F2FF" stroke="#90B9F1" stroke-width="4"/>
+    <circle cx="1330" cy="720" r="40" fill="#EFEAFF" stroke="#AFA3F3" stroke-width="4"/>
+    <circle cx="700" cy="520" r="34" fill="#ECF5FF" stroke="#97C0F5" stroke-width="4"/>
+    <circle cx="830" cy="520" r="34" fill="#F0ECFF" stroke="#B7A8F6" stroke-width="4"/>
+  </g>
+</svg>
