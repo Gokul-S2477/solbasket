@@ -1,448 +1,462 @@
-﻿<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Solbasket | Advanced Digital Systems</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/images/solbasket_logo_transparent.png" />
   <link rel="apple-touch-icon" href="assets/images/solbasket_logo_transparent.png" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/style.css" />
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js" defer></script>
 </head>
 <body>
-  <div id="progress-bar" aria-hidden="true"></div>
-  <div class="cursor-glow" aria-hidden="true"></div>
-  <div class="ambient ambient-a" aria-hidden="true"></div>
-  <div class="ambient ambient-b" aria-hidden="true"></div>
-  <div class="ambient ambient-c" aria-hidden="true"></div>
-
   <header class="site-header" id="top">
-    <nav class="navbar container">
-      <a href="#home" class="logo" aria-label="Solbasket Home">
-        <img src="assets/images/solbasket_logo_transparent.png" alt="Solbasket logo" class="logo-image" />
+    <div class="container nav-shell">
+      <a href="#home" class="brand" aria-label="Solbasket home">
+        <img src="assets/images/solbasket_logo_transparent.png" alt="Solbasket logo" />
       </a>
 
-      <div class="nav-actions">
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
-          <span></span>
-          <span></span>
-        </button>
-      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li class="nav-mode-item">
-          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon" id="themeIcon">◐</span>
-            <span class="theme-label" id="themeLabel">Dark</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
+      <nav class="nav-links" id="navLinks" aria-label="Main">
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact Us</a>
+      </nav>
+
+      <a href="#contact" class="wa-btn" aria-label="Quick contact">WA</a>
+    </div>
   </header>
 
   <main>
-    <section id="home" class="hero section">
-      <canvas id="ai-canvas" aria-hidden="true"></canvas>
+    <section class="section hero" id="home">
+      <div class="container hero-card">
+        <p class="kicker">Premium Conversion Engineering</p>
+        <h1>Designing the future, one platform and one line of code at a time.</h1>
+        <p class="lead">
+          Solbasket builds high-impact websites, secure software, live analytics, HR operations, and
+          growth marketing systems for businesses that want measurable outcomes.
+        </p>
 
-      <div class="hero-grid container">
-        <div class="hero-copy" data-reveal="fade-right">
-          <p class="tag">Premium Conversion Engineering</p>
-          <h1>Future-Ready Digital Solutions for Ambitious Business Growth</h1>
-          <p>
-            Solbasket crafts high-impact web platforms, enterprise software, advanced analytics, HR operations,
-            and growth marketing systems designed to help businesses close better clients.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#contact" class="btn btn-primary magnetic">Book Strategy Call</a>
-            <a href="#services" class="btn btn-ghost magnetic">Explore Capabilities</a>
-          </div>
-
-          <div class="hero-stats">
-            <article><h3>98%</h3><p>Customer satisfaction</p></article>
-            <article><h3>5</h3><p>Core digital service areas</p></article>
-            <article><h3>Agile</h3><p>Execution and communication model</p></article>
-          </div>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-dark">Contact Us</a>
+          <a href="#services" class="btn btn-green">Our Services</a>
         </div>
 
-        <div class="hero-visual" data-reveal="fade-left">
-          <div class="hero-panel tilt-card">
-            <div class="panel-header"><span></span><span></span><span></span></div>
-            <img src="assets/images/ai-web-vision.svg" alt="Premium digital product interface concept" loading="eager" />
-          </div>
-          <div class="floating-chip chip-a">Client Acquisition</div>
-          <div class="floating-chip chip-b">Conversion Science</div>
-          <div class="floating-chip chip-c">Enterprise Reliability</div>
+        <div class="hero-tags">
+          <span class="tag orange">Agency</span>
+          <span class="tag navy">Expert</span>
+          <span class="tag violet">Innovative</span>
         </div>
       </div>
-
-      <div class="trust-strip" data-reveal="fade-up">
-        <div class="track">
-          <span>Enterprise Websites</span><span>Cloud Software</span><span>Data Intelligence</span><span>HR Systems</span><span>Performance Marketing</span>
-          <span>Enterprise Websites</span><span>Cloud Software</span><span>Data Intelligence</span><span>HR Systems</span><span>Performance Marketing</span>
-        </div>
-      </div>
-
-      <a href="#about" class="scroll-indicator" aria-label="Scroll down"><span></span></a>
     </section>
 
-    <section id="about" class="section about-section">
-      <div class="container about-grid">
-        <div class="about-copy" data-reveal="fade-right">
-          <p class="tag">About Solbasket</p>
-          <h2>Engineering Digital Systems that Help Businesses Win Better Clients</h2>
-          <p>
-            Solbasket is a technology and growth partner focused on measurable business outcomes.
-            Our teams combine product design, software engineering, analytics, and operations strategy
-            to build digital foundations that scale with speed and reliability.
-          </p>
-          <div class="about-metrics">
-            <article>
-              <h4>Execution First</h4>
-              <p>Structured delivery models with clear milestones, ownership, and performance visibility.</p>
-            </article>
-            <article>
-              <h4>Enterprise Quality</h4>
-              <p>Security, scalability, and maintainability integrated from architecture to release.</p>
-            </article>
-            <article>
-              <h4>Growth Aligned</h4>
-              <p>Every solution is mapped to conversion, retention, and operational performance goals.</p>
-            </article>
+    <section class="section stats">
+      <div class="container stats-grid">
+        <article class="stat-card">
+          <div class="stat-icon">01</div>
+          <div>
+            <h3>Projects</h3>
+            <p>Execution-focused builds</p>
           </div>
-        </div>
+        </article>
 
-        <div class="about-visual" data-reveal="fade-left">
-          <article class="about-card mission-card tilt-card">
-            <div class="about-card-head">
-              <span class="pulse-dot"></span>
-              <p>Mission</p>
+        <article class="stat-card">
+          <div class="stat-icon">02</div>
+          <div>
+            <h3>Clients</h3>
+            <p>Trusted by growth teams</p>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon">03</div>
+          <div>
+            <h3>Talents</h3>
+            <p>Multidisciplinary experts</p>
+          </div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-icon">04</div>
+          <div>
+            <h3>Delivery</h3>
+            <p>Reliable and measurable</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section soft" id="about">
+      <div class="container">
+        <p class="kicker center">About Us</p>
+        <h2 class="section-title center">Where ideas go digital and business outcomes scale.</h2>
+
+        <div class="about-layout">
+          <article class="card about-block">
+            <h3>Driven to conquer digital challenges.</h3>
+            <p>
+              Solbasket is a technology and growth partner built around measurable execution.
+              We combine product thinking, software engineering, analytics, and operations
+              strategy to help businesses close better clients.
+            </p>
+            <p>
+              We do not chase complexity for the sake of it. We build clean systems that are
+              conversion-ready, maintainable, and aligned with business goals.
+            </p>
+
+            <div class="value-rail" id="valueRail" role="tablist" aria-label="Core values">
+              <button type="button" class="value-pill active" data-value="innovative" role="tab" aria-selected="true">Innovative</button>
+              <button type="button" class="value-pill" data-value="authentic" role="tab" aria-selected="false">Authentic</button>
+              <button type="button" class="value-pill" data-value="disruptive" role="tab" aria-selected="false">Disruptive</button>
+              <button type="button" class="value-pill" data-value="visionary" role="tab" aria-selected="false">Visionary</button>
             </div>
-            <h3>Build premium digital ecosystems that transform business intent into execution.</h3>
-            <ul>
-              <li>Design conversion-focused digital experiences</li>
-              <li>Develop robust, scalable technology platforms</li>
-              <li>Enable teams with process intelligence and automation</li>
-            </ul>
           </article>
 
-          <article class="about-card vision-card tilt-card">
-            <div class="about-card-head">
-              <span class="pulse-dot"></span>
-              <p>Vision</p>
-            </div>
-            <h3>Become the most trusted partner for growth-stage and enterprise digital modernization.</h3>
-            <ul>
-              <li>Lead with innovation grounded in business outcomes</li>
-              <li>Set new quality benchmarks in delivery execution</li>
-              <li>Create long-term strategic value for every client</li>
+          <article class="card about-visual" id="aboutVisual">
+            <img id="aboutValueImage" src="https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1600&q=80" alt="Solbasket innovative technology development workspace" loading="lazy" />
+            <h3 id="aboutValueTitle">Innovate. Transform. Lead.</h3>
+            <p id="aboutValueText">
+              Every project maps to conversion, retention, and operational performance goals.
+              We build premium digital ecosystems that turn business intent into execution.
+            </p>
+            <ul class="bullet-list" id="aboutValueList">
+              <li>Design conversion-focused digital experiences.</li>
+              <li>Develop secure and scalable technology platforms.</li>
+              <li>Enable teams with process intelligence and automation.</li>
             </ul>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="services" class="section service-section web-theme">
-      <div class="container service-grid">
-        <div class="content" data-reveal="fade-right">
-          <p class="tag">Web Development</p>
-          <h2>Premium Websites that Create Immediate Trust</h2>
-          <p>
-            We deliver polished high-conversion websites with advanced UI systems, speed engineering,
-            semantic SEO foundations, and deployment reliability that supports serious business growth.
-          </p>
-          <ul class="feature-list">
-            <li>Unique brand-centric interface architecture</li>
-            <li>Performance-first front-end implementation</li>
-            <li>SEO-ready structural and metadata strategy</li>
-            <li>Responsive behavior for all screen classes</li>
-            <li>Secure release pipeline and long-term upkeep</li>
-          </ul>
+    <section class="section services-redesign" id="services">
+      <div class="services-shell">
+        <div class="services-header">
+          <p class="kicker">Our Services</p>
+          <h2>Digital Services Built for Real Business Outcomes</h2>
         </div>
 
-        <div class="visual" data-reveal="fade-left">
-          <div class="web-live-demo tilt-card" id="webLiveDemo" aria-label="Interactive sample website preview">
-            <div class="mac-toolbar">
-              <span></span><span></span><span></span>
-              <div class="demo-url">solbasket-client-preview.com</div>
-            </div>
-            <div class="demo-main">
-              <div class="demo-site-nav">
-                <button class="demo-nav-item active" data-view="overview">Overview</button>
-                <button class="demo-nav-item" data-view="solutions">Solutions</button>
-                <button class="demo-nav-item" data-view="analytics">Analytics</button>
-                <button class="demo-nav-item" data-view="leads">Leads</button>
-              </div>
-              <div class="demo-view-stack">
-                <section class="demo-view active" data-view="overview">
-                  <div class="demo-hero-card demo-target">
-                    <h6>Enterprise Growth Platform</h6>
-                    <p>Interactive client-ready website experience</p>
-                    <button class="demo-cta demo-target">Get Proposal</button>
-                  </div>
-                  <div class="demo-media-row">
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80" alt="Website interface section" loading="lazy" />
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1545235617-9465d2a55698?auto=format&fit=crop&w=900&q=80" alt="Landing page showcase panel" loading="lazy" />
-                  </div>
-                </section>
-                <section class="demo-view" data-view="solutions">
-                  <div class="demo-widgets">
-                    <article class="demo-widget demo-target"><p>Web Platform</p><h6>Production Ready</h6></article>
-                    <article class="demo-widget demo-target"><p>Software Stack</p><h6>API Integrated</h6></article>
-                    <article class="demo-widget demo-target"><p>Security</p><h6>Enterprise Grade</h6></article>
-                  </div>
-                  <div class="demo-media-row">
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1559028012-481c04fa702d?auto=format&fit=crop&w=900&q=80" alt="Modern website UI panel" loading="lazy" />
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=900&q=80" alt="Collaborative product design screen" loading="lazy" />
-                  </div>
-                </section>
-                <section class="demo-view" data-view="analytics">
-                  <div class="demo-widgets">
-                    <article class="demo-widget demo-target"><p>Conversion</p><h6>4.8%</h6></article>
-                    <article class="demo-widget demo-target"><p>Qualified Leads</p><h6>1,284</h6></article>
-                    <article class="demo-widget demo-target"><p>Campaign ROI</p><h6>312%</h6></article>
-                  </div>
-                  <div class="demo-mini-line demo-target"><span></span><span></span><span></span><span></span><span></span></div>
-                  <div class="demo-media-row">
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80" alt="Dashboard chart visualization with KPI cards" loading="lazy" />
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80" alt="Business intelligence dashboard with trend charts" loading="lazy" />
-                  </div>
-                </section>
-                <section class="demo-view" data-view="leads">
-                  <div class="demo-leads demo-target">
-                    <div><strong>Acme Corp</strong><span>High Intent</span></div>
-                    <div><strong>Northline</strong><span>Meeting Booked</span></div>
-                    <div><strong>NovaTek</strong><span>Proposal Sent</span></div>
-                  </div>
-                  <div class="demo-media-row">
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80" alt="Sales lead management workspace" loading="lazy" />
-                    <img class="demo-media demo-target" src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=900&q=80" alt="Client proposal and pipeline review meeting" loading="lazy" />
-                  </div>
-                </section>
-              </div>
-            </div>
-            <div class="demo-pointer" id="demoPointer" aria-hidden="true"></div>
-            <div class="demo-click" id="demoClick" aria-hidden="true"></div>
-          </div>
-          <div class="visual-kpis">
-            <article><h4><span class="counter" data-target="92">0</span>%</h4><p>Lead capture optimization</p></article>
-            <article><h4><span class="counter" data-target="88">0</span>%</h4><p>Page performance score</p></article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="software" class="section service-section software-theme">
-      <div class="container service-grid reverse">
-        <div class="visual" data-reveal="fade-right">
-          <div class="radar-box tilt-card">
-            <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1400&q=80" alt="Enterprise software engineering environment" loading="lazy" />
-          </div>
-          <div class="module-grid">
-            <div>ERP Systems</div><div>SaaS Platforms</div><div>API Integrations</div><div>Secure Backends</div>
-          </div>
-        </div>
-
-        <div class="content" data-reveal="fade-left">
-          <p class="tag">Software Development</p>
-          <h2>Scalable Software Platforms for Enterprise Growth</h2>
-          <p>
-            Solbasket builds secure custom software architectures with cloud-ready backends, automation logic,
-            API-first integrations, and robust delivery practices for long-term operational scale.
-          </p>
-          <ul class="feature-list">
-            <li>Enterprise-grade architecture and domain modeling</li>
-            <li>Automation workflows for operations and approvals</li>
-            <li>Secure backend systems with governance controls</li>
-            <li>Third-party and internal system integrations</li>
-            <li>Scalable rollout strategy from MVP to enterprise</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="data" class="section service-section data-theme">
-      <div class="container service-grid">
-        <div class="content" data-reveal="fade-right">
-          <p class="tag">Data Analysis</p>
-          <h2>Live Analytics That Turn Data into Decisions</h2>
-          <p>
-            We implement BI intelligence stacks with real-time KPI tracking, forecasting models,
-            and executive reporting systems that speed up high-value decisions.
-          </p>
-          <ul class="feature-list">
-            <li>Executive-ready business intelligence dashboards</li>
-            <li>KPI monitoring with trend and anomaly visibility</li>
-            <li>Forecasting for growth and operations planning</li>
-            <li>Automated stakeholder and leadership reporting</li>
-            <li>Decision-support insights with live updates</li>
-          </ul>
-        </div>
-
-        <div class="visual" data-reveal="fade-left">
-          <div class="bi-dashboard-shell tilt-card">
-            <div class="bi-head">
-              <h5>Business Intelligence Command Center</h5>
-              <p>Live operational dashboard</p>
-            </div>
-            <div class="bi-kpi-row">
-              <article class="bi-kpi"><p>Revenue</p><h6>$2.4M</h6></article>
-              <article class="bi-kpi"><p>Retention</p><h6>93%</h6></article>
-              <article class="bi-kpi"><p>Pipeline</p><h6>1,284</h6></article>
-              <article class="bi-kpi"><p>Forecast</p><h6>97%</h6></article>
-            </div>
-            <div class="bi-charts-grid">
-              <div class="bi-line-card">
-                <p>Growth Trend</p>
-                <div class="bi-line"><span></span><span></span><span></span><span></span><span></span></div>
-              </div>
-              <div class="bi-donut-card">
-                <p>Segment Mix</p>
-                <div class="bi-donut"></div>
-              </div>
-              <div class="bi-bars-card">
-                <p>Channel Performance</p>
-                <div class="bi-bars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              </div>
-              <div class="bi-table-card">
-                <p>Top Accounts</p>
-                <div class="bi-table">
-                  <div><strong>Acme</strong><span>+18%</span></div>
-                  <div><strong>Northline</strong><span>+13%</span></div>
-                  <div><strong>NovaTek</strong><span>+11%</span></div>
+        <div class="services-scroll-track" id="servicesTrack">
+          <div class="services-scroll-stage">
+            <div class="services-module">
+              <div class="service-stage" id="serviceStage">
+                <article class="service-panel active" data-step="1">
+              <div class="service-panel-body">
+                <figure class="service-media">
+                  <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1800&q=80" alt="Web development workspace with code editor" loading="lazy" />
+                </figure>
+                <div class="service-copy">
+                  <span class="service-step">01</span>
+                  <h3>Web Development</h3>
+                  <p>Premium websites engineered for trust, speed, and conversion.</p>
+                  <ul class="bullet-list">
+                    <li>Unique brand-centric UI systems.</li>
+                    <li>Performance-first and SEO-ready builds.</li>
+                    <li>Responsive behavior across all screen sizes.</li>
+                    <li>Secure deployment and long-term upkeep.</li>
+                  </ul>
                 </div>
               </div>
+                </article>
+
+                <article class="service-panel" data-step="2">
+              <div class="service-panel-body">
+                <figure class="service-media">
+                  <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1800&q=80" alt="Software engineering setup with multiple screens" loading="lazy" />
+                </figure>
+                <div class="service-copy">
+                  <span class="service-step">02</span>
+                  <h3>Software Development</h3>
+                  <p>Scalable software platforms for long-term operational growth.</p>
+                  <ul class="bullet-list">
+                    <li>Enterprise-grade architecture and domain modeling.</li>
+                    <li>Secure backend systems with governance controls.</li>
+                    <li>API-first integrations and automation workflows.</li>
+                    <li>MVP to enterprise rollout planning.</li>
+                  </ul>
+                </div>
+              </div>
+                </article>
+
+                <article class="service-panel" data-step="3">
+              <div class="service-panel-body">
+                <figure class="service-media">
+                  <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1800&q=80" alt="Data analytics dashboard and charts on screen" loading="lazy" />
+                </figure>
+                <div class="service-copy">
+                  <span class="service-step">03</span>
+                  <h3>Data Analysis</h3>
+                  <p>Analytics systems that turn raw data into decisive actions.</p>
+                  <ul class="bullet-list">
+                    <li>Executive-ready BI dashboards.</li>
+                    <li>KPI monitoring with trend visibility.</li>
+                    <li>Forecasting and stakeholder reporting.</li>
+                    <li>Live insights for faster decisions.</li>
+                  </ul>
+                </div>
+              </div>
+                </article>
+
+                <article class="service-panel" data-step="4">
+              <div class="service-panel-body">
+                <figure class="service-media">
+                  <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1800&q=80" alt="HR team discussion and recruitment planning" loading="lazy" />
+                </figure>
+                <div class="service-copy">
+                  <span class="service-step">04</span>
+                  <h3>HR Services</h3>
+                  <p>Structured HR operations that support team scaling.</p>
+                  <ul class="bullet-list">
+                    <li>Talent acquisition strategy and workflows.</li>
+                    <li>Workforce planning and continuity models.</li>
+                    <li>Compliance tracking and policy readiness.</li>
+                    <li>Hiring and retention analytics.</li>
+                  </ul>
+                </div>
+              </div>
+                </article>
+
+                <article class="service-panel" data-step="5">
+              <div class="service-panel-body">
+                <figure class="service-media">
+                  <img src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=1800&q=80" alt="Digital marketing campaign planning and analytics" loading="lazy" />
+                </figure>
+                <div class="service-copy">
+                  <span class="service-step">05</span>
+                  <h3>Digital Marketing</h3>
+                  <p>Campaign systems that convert attention into pipeline quality.</p>
+                  <ul class="bullet-list">
+                    <li>Paid channel architecture with intent segmentation.</li>
+                    <li>Landing page conversion optimization loops.</li>
+                    <li>SEO and content systems for demand continuity.</li>
+                    <li>Attribution dashboards and ROI clarity.</li>
+                  </ul>
+                </div>
+              </div>
+                </article>
+              </div>
+
+              <aside class="services-nav" aria-label="Service list" role="tablist">
+                <button type="button" class="services-nav-item active" data-step="1" role="tab" aria-selected="true">
+                  <span class="services-nav-index">01</span>
+                  <span class="services-nav-label">Web Development</span>
+                </button>
+                <button type="button" class="services-nav-item" data-step="2" role="tab" aria-selected="false">
+                  <span class="services-nav-index">02</span>
+                  <span class="services-nav-label">Software Development</span>
+                </button>
+                <button type="button" class="services-nav-item" data-step="3" role="tab" aria-selected="false">
+                  <span class="services-nav-index">03</span>
+                  <span class="services-nav-label">Data Analysis</span>
+                </button>
+                <button type="button" class="services-nav-item" data-step="4" role="tab" aria-selected="false">
+                  <span class="services-nav-index">04</span>
+                  <span class="services-nav-label">HR Services</span>
+                </button>
+                <button type="button" class="services-nav-item" data-step="5" role="tab" aria-selected="false">
+                  <span class="services-nav-index">05</span>
+                  <span class="services-nav-label">Digital Marketing</span>
+                </button>
+              </aside>
             </div>
           </div>
-          <div class="bar-metrics">
-            <div class="metric-row"><span>Forecast Confidence</span><div class="bar-track"><div class="bar-fill" data-fill="95"></div></div></div>
-            <div class="metric-row"><span>Reporting Automation</span><div class="bar-track"><div class="bar-fill" data-fill="84"></div></div></div>
-            <div class="metric-row"><span>Decision Velocity</span><div class="bar-track"><div class="bar-fill" data-fill="90"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section tools">
+      <div class="container tools-grid">
+        <article class="tools-copy">
+          <p class="kicker">Integrations</p>
+          <h2>Powerful tools for digital excellence.</h2>
+          <p>
+            Enhance productivity, streamline operations, and connect your complete
+            digital workflow without disruption.
+          </p>
+          <a href="#contact" class="btn btn-dark">Explore Integrations</a>
+        </article>
+
+        <div class="tools-marquee" aria-label="Integration technologies">
+          <div class="marquee-row">
+            <div class="marquee-track">
+              <span class="tool-chip">Cloud Architecture</span>
+              <span class="tool-chip">API Integrations</span>
+              <span class="tool-chip">CRM Workflows</span>
+              <span class="tool-chip">Dashboarding</span>
+              <span class="tool-chip">Process Automation</span>
+              <span class="tool-chip">Design Systems</span>
+              <span class="tool-chip">SEO Stack</span>
+              <span class="tool-chip">Campaign Ops</span>
+              <span class="tool-chip">Cloud Architecture</span>
+              <span class="tool-chip">API Integrations</span>
+              <span class="tool-chip">CRM Workflows</span>
+              <span class="tool-chip">Dashboarding</span>
+              <span class="tool-chip">Process Automation</span>
+              <span class="tool-chip">Design Systems</span>
+              <span class="tool-chip">SEO Stack</span>
+              <span class="tool-chip">Campaign Ops</span>
+            </div>
           </div>
-          <div class="mini-image-row">
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80" alt="Detailed BI dashboard with multiple widgets and KPIs" loading="lazy" />
-            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80" alt="Business intelligence reporting interface with charts and data tables" loading="lazy" />
+          <div class="marquee-row reverse">
+            <div class="marquee-track">
+              <span class="tool-chip">Security Review</span>
+              <span class="tool-chip">A/B Testing</span>
+              <span class="tool-chip">HR Analytics</span>
+              <span class="tool-chip">Support Systems</span>
+              <span class="tool-chip">Automation Engines</span>
+              <span class="tool-chip">Analytics Models</span>
+              <span class="tool-chip">Data Pipelines</span>
+              <span class="tool-chip">UX Prototyping</span>
+              <span class="tool-chip">Security Review</span>
+              <span class="tool-chip">A/B Testing</span>
+              <span class="tool-chip">HR Analytics</span>
+              <span class="tool-chip">Support Systems</span>
+              <span class="tool-chip">Automation Engines</span>
+              <span class="tool-chip">Analytics Models</span>
+              <span class="tool-chip">Data Pipelines</span>
+              <span class="tool-chip">UX Prototyping</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="hr" class="section service-section hr-theme">
-      <div class="container service-grid reverse">
-        <div class="visual" data-reveal="fade-right">
-          <div class="timeline-card tilt-card">
-            <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1400&q=80" alt="Corporate recruitment and interview workflow" loading="lazy" />
-          </div>
-          <div class="chip-cloud">
-            <span>Talent Acquisition</span><span>Workforce Planning</span><span>Compliance Tracking</span><span>HR Analytics</span>
-          </div>
+    <section class="section community">
+      <div class="container community-card">
+        <div class="community-copy">
+          <h3>Ready to transform your business?</h3>
+          <p>
+            Take the next step toward smarter automation, stronger digital experiences,
+            and data-driven decisions.
+          </p>
+          <a href="#contact" class="btn btn-dark">Get Started</a>
         </div>
 
-        <div class="content" data-reveal="fade-left">
-          <p class="tag">HR Services</p>
-          <h2>Structured HR Operations for Team Scaling</h2>
+        <div class="community-visual" aria-hidden="true">
+          <img src="assets/images/ai-software-grid.svg" alt="" />
+        </div>
+
+        <div class="community-copy right">
+          <h3>Join our community</h3>
           <p>
-            Our HR framework supports recruitment, planning, compliance, and analytics so teams can scale
-            with stronger hiring quality and operational consistency.
+            Connect with professionals, share insights, and keep improving your
+            digital systems with practical execution.
           </p>
-          <ul class="feature-list">
-            <li>Growth-stage talent acquisition strategy</li>
-            <li>Recruitment lifecycle with transparent workflows</li>
-            <li>Workforce capacity and continuity planning</li>
-            <li>HR metrics for hiring and retention visibility</li>
-            <li>Compliance process tracking and policy readiness</li>
+          <a href="#contact" class="btn btn-light">Join Now</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="container contact-layout">
+        <article class="card contact-info">
+          <p class="kicker">Contact</p>
+          <h2>Let's build your next digital win.</h2>
+          <p>
+            Share your scope and goals. We will map an execution plan across web,
+            software, analytics, HR, and growth marketing.
+          </p>
+
+          <ul class="contact-list">
+            <li><strong>Email:</strong> <a href="mailto:solbasketinfo@gmail.com">solbasketinfo@gmail.com</a></li>
+            <li><strong>Delivery model:</strong> Agile with milestone visibility</li>
+            <li><strong>Focus:</strong> Conversion, reliability, and measurable outcomes</li>
           </ul>
-        </div>
-      </div>
-    </section>
+        </article>
 
-    <section id="marketing" class="section service-section marketing-theme">
-      <div class="container service-grid">
-        <div class="content" data-reveal="fade-right">
-          <p class="tag">Digital Marketing</p>
-          <h2>Campaign Systems that Convert Interest into Revenue</h2>
-          <p>
-            We design and optimize growth pipelines across paid media, SEO, landing pages, and conversion
-            analytics so marketing spend directly improves pipeline quality.
-          </p>
-          <ul class="feature-list">
-            <li>Paid channel architecture with intent segmentation</li>
-            <li>Landing page conversion optimization loops</li>
-            <li>SEO and content systems for demand continuity</li>
-            <li>Attribution dashboards for ROI clarity</li>
-            <li>Continuous experiment-driven growth operations</li>
-          </ul>
-        </div>
-
-        <div class="visual" data-reveal="fade-left">
-          <div class="campaign-card tilt-card">
-            <img src="https://images.unsplash.com/photo-1533750516457-a7f992034fec?auto=format&fit=crop&w=1400&q=80" alt="Digital marketing campaign strategy dashboard" loading="lazy" />
-          </div>
-          <div class="mini-image-row">
-            <img src="https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?auto=format&fit=crop&w=1000&q=80" alt="Performance marketing analytics and optimization board" loading="lazy" />
-            <img src="https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=1000&q=80" alt="Campaign reporting and conversion tracking screen" loading="lazy" />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section contact-section">
-      <div class="container contact-grid">
-        <div class="contact-copy" data-reveal="fade-right">
-          <p class="tag">Contact</p>
-          <h2>Let’s Build a Project-Winning Digital Experience</h2>
-          <p>
-            Share your scope and goals. We will build an execution roadmap across web, software,
-            data, HR, and digital marketing.
-          </p>
-          <div class="contact-card">
-            <p>Email</p>
-            <a href="mailto:solbasketinfo@gmail.com">solbasketinfo@gmail.com</a>
-          </div>
-        </div>
-
-        <form id="contactForm" class="contact-form" data-reveal="fade-left">
-          <div class="field-group"><input id="name" name="name" type="text" required placeholder=" " /><label for="name">Full Name</label></div>
-          <div class="field-group"><input id="email" name="email" type="email" required placeholder=" " /><label for="email">Business Email</label></div>
-          <div class="field-group"><input id="company" name="company" type="text" required placeholder=" " /><label for="company">Company Name</label></div>
+        <form id="contactForm" class="card contact-form">
           <div class="field-group">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" required />
+          </div>
+
+          <div class="field-group">
+            <label for="email">Business Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+
+          <div class="field-group">
+            <label for="company">Company Name</label>
+            <input id="company" name="company" type="text" required />
+          </div>
+
+          <div class="field-group">
+            <label for="service">Service Needed</label>
             <select id="service" name="service" required>
-              <option value="" selected disabled></option>
+              <option value="">Select a service</option>
               <option value="web-development">Web Development</option>
               <option value="software-development">Software Development</option>
               <option value="data-analysis">Data Analysis</option>
               <option value="hr-services">HR Services</option>
               <option value="digital-marketing">Digital Marketing</option>
             </select>
-            <label for="service">Service Needed</label>
           </div>
-          <div class="field-group"><textarea id="message" name="message" rows="4" required placeholder=" "></textarea><label for="message">Project Brief</label></div>
 
-          <button type="submit" class="btn btn-primary magnetic submit-btn">Send Proposal Request</button>
-          <p class="form-status" id="formStatus" aria-live="polite"></p>
+          <div class="field-group">
+            <label for="message">Project Brief</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-green full">Send Proposal Request</button>
+          <p id="formStatus" class="form-status" aria-live="polite"></p>
         </form>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#home" class="brand footer-brand" aria-label="Solbasket home">
+          <img src="assets/images/solbasket_logo_transparent.png" alt="Solbasket logo" />
+        </a>
+        <p class="footer-text">Premium digital systems for serious business growth.</p>
+      </div>
+
+      <div>
+        <h4 class="footer-title">Company</h4>
+        <ul class="footer-list">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-title">Services</h4>
+        <ul class="footer-list">
+          <li>Web Development</li>
+          <li>Software Development</li>
+          <li>Data Analysis</li>
+          <li>HR Services</li>
+          <li>Digital Marketing</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="footer-title">Contact</h4>
+        <ul class="footer-list">
+          <li><a href="mailto:solbasketinfo@gmail.com">solbasketinfo@gmail.com</a></li>
+          <li>Agile delivery and execution support</li>
+          <li>Project consultation available</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="container">
-      <p>© <span id="year"></span> Solbasket. Premium digital systems for serious business growth.</p>
+      <p class="copyright">&copy; <span id="year"></span> Solbasket. All rights reserved.</p>
     </div>
   </footer>
 
-  <script src="assets/js/ai-scene.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>

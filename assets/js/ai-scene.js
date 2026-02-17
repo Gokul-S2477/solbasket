@@ -4,6 +4,7 @@
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const rootEl = document.documentElement;
+  const host = canvas.closest("[data-ai-sphere-zone]") || canvas.parentElement || document.body;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 120);
@@ -120,9 +121,8 @@
   });
 
   function resize() {
-    const hero = canvas.closest(".hero") || document.body;
-    const w = hero.clientWidth;
-    const h = hero.clientHeight;
+    const w = host.clientWidth || 420;
+    const h = host.clientHeight || 420;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -131,17 +131,16 @@
   window.addEventListener("resize", resize);
   resize();
 
-  const hero = canvas.closest(".hero");
-  if (hero && !prefersReducedMotion) {
-    hero.addEventListener("mousemove", (event) => {
-      const rect = hero.getBoundingClientRect();
+  if (host && !prefersReducedMotion) {
+    host.addEventListener("mousemove", (event) => {
+      const rect = host.getBoundingClientRect();
       mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
       target.y = mouse.x * 0.24;
       target.x = -mouse.y * 0.14;
     });
 
-    hero.addEventListener("mouseleave", () => {
+    host.addEventListener("mouseleave", () => {
       target.x = 0;
       target.y = 0;
     });

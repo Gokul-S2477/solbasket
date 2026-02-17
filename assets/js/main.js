@@ -1,85 +1,48 @@
-﻿(function () {
+(function () {
   const doc = document;
-  const root = doc.documentElement;
-  const progressBar = doc.getElementById("progress-bar");
   const header = doc.querySelector(".site-header");
   const navLinks = doc.getElementById("navLinks");
   const menuToggle = doc.getElementById("menuToggle");
-  const cursorGlow = doc.querySelector(".cursor-glow");
   const yearEl = doc.getElementById("year");
-  const themeToggle = doc.getElementById("themeToggle");
-  const themeIcon = doc.getElementById("themeIcon");
-  const themeLabel = doc.getElementById("themeLabel");
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const form = doc.getElementById("contactForm");
+  const formStatus = doc.getElementById("formStatus");
+  const HEADER_SCROLL_ENTER = 28;
+  const HEADER_SCROLL_EXIT = 14;
 
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  const STORAGE_KEY = "solbasket_theme";
-  const initialTheme = localStorage.getItem(STORAGE_KEY) || "light";
-  root.setAttribute("data-theme", initialTheme);
-  updateThemeButton(initialTheme);
+  let headerScrolled = null;
+  let headerTicking = false;
 
-  function updateThemeButton(theme) {
-    if (!themeIcon || !themeLabel) return;
-    if (theme === "dark") {
-      themeIcon.textContent = "☀";
-      themeLabel.textContent = "Light";
-    } else {
-      themeIcon.textContent = "◐";
-      themeLabel.textContent = "Dark";
-    }
+  function setHeaderState() {
+    if (!header) return;
+
+    const y = window.scrollY;
+    const nextScrolled =
+      headerScrolled === null
+        ? y > HEADER_SCROLL_ENTER
+        : headerScrolled
+          ? y > HEADER_SCROLL_EXIT
+          : y > HEADER_SCROLL_ENTER;
+
+    if (nextScrolled === headerScrolled) return;
+
+    headerScrolled = nextScrolled;
+    header.classList.toggle("scrolled", nextScrolled);
   }
 
-  function emitThemeChange(theme) {
-    window.dispatchEvent(new CustomEvent("solbasket:theme", { detail: { theme } }));
-  }
+  function onHeaderScroll() {
+    if (headerTicking) return;
+    headerTicking = true;
 
-  emitThemeChange(initialTheme);
-
-  if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-      const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-      const next = current === "dark" ? "light" : "dark";
-      root.setAttribute("data-theme", next);
-      localStorage.setItem(STORAGE_KEY, next);
-      updateThemeButton(next);
-      emitThemeChange(next);
+    window.requestAnimationFrame(() => {
+      setHeaderState();
+      headerTicking = false;
     });
   }
 
-  function updateHeaderAndProgress() {
-    const scrollTop = doc.documentElement.scrollTop || doc.body.scrollTop;
-    const scrollHeight = doc.documentElement.scrollHeight - doc.documentElement.clientHeight;
-    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-
-    if (progressBar) progressBar.style.width = `${progress}%`;
-    if (header) header.classList.toggle("scrolled", scrollTop > 54);
-  }
-
-  window.addEventListener("scroll", updateHeaderAndProgress, { passive: true });
-  updateHeaderAndProgress();
-
-  if (cursorGlow && !prefersReducedMotion) {
-    let cx = window.innerWidth / 2;
-    let cy = window.innerHeight / 2;
-    let tx = cx;
-    let ty = cy;
-
-    window.addEventListener("mousemove", (event) => {
-      tx = event.clientX;
-      ty = event.clientY;
-    });
-
-    function animateCursor() {
-      cx += (tx - cx) * 0.14;
-      cy += (ty - cy) * 0.14;
-      cursorGlow.style.left = `${cx}px`;
-      cursorGlow.style.top = `${cy}px`;
-      requestAnimationFrame(animateCursor);
-    }
-
-    animateCursor();
-  }
+  setHeaderState();
+  window.addEventListener("scroll", onHeaderScroll, { passive: true });
 
   if (menuToggle && navLinks) {
     menuToggle.addEventListener("click", () => {
@@ -93,6 +56,13 @@
         menuToggle.setAttribute("aria-expanded", "false");
       });
     });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 920) {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
   }
 
   doc.querySelectorAll("a[href^='#']").forEach((anchor) => {
@@ -103,254 +73,300 @@
       if (!target) return;
 
       event.preventDefault();
-      target.scrollIntoView({
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-        block: "start"
-      });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 
   const sections = [...doc.querySelectorAll("main section[id]")];
-  const navAnchors = [...doc.querySelectorAll(".nav-links a")];
+  const navAnchors = [...doc.querySelectorAll(".nav-links a[href^='#']")];
   if (sections.length && navAnchors.length) {
-    const activeObserver = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           const id = entry.target.getAttribute("id");
-          const targetId = entry.target.classList.contains("service-section") ? "services" : id;
-          navAnchors.forEach((a) => {
-            const active = a.getAttribute("href") === `#${targetId}`;
-            a.classList.toggle("active", active);
+          navAnchors.forEach((anchor) => {
+            anchor.classList.toggle("active", anchor.getAttribute("href") === `#${id}`);
           });
         });
       },
-      { threshold: 0.48 }
+      { threshold: 0.42 }
     );
 
-    sections.forEach((section) => activeObserver.observe(section));
+    sections.forEach((section) => observer.observe(section));
   }
 
-  doc.querySelectorAll(".magnetic").forEach((item) => {
-    item.addEventListener("mousemove", (event) => {
-      const rect = item.getBoundingClientRect();
-      const x = event.clientX - rect.left - rect.width / 2;
-      const y = event.clientY - rect.top - rect.height / 2;
-      item.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
+  const revealTargets = [
+    ...doc.querySelectorAll(
+      ".stat-card, .about-block, .about-visual, .services-header, .services-module, .services-nav-item, .tools-copy, .tools-marquee, .community-card, .contact-info, .contact-form"
+    )
+  ];
+
+  if (revealTargets.length) {
+    revealTargets.forEach((element, index) => {
+      element.classList.add("reveal-up");
+      element.style.setProperty("--reveal-delay", `${Math.min(index * 55, 280)}ms`);
     });
 
-    item.addEventListener("mouseleave", () => {
-      item.style.transform = "translate(0, 0)";
-    });
-  });
-
-  const tiltCards = doc.querySelectorAll(".tilt-card, .hero-stats article, .visual");
-  tiltCards.forEach((card) => {
-    card.addEventListener("mousemove", (event) => {
-      if (prefersReducedMotion) return;
-      const rect = card.getBoundingClientRect();
-      const px = (event.clientX - rect.left) / rect.width;
-      const py = (event.clientY - rect.top) / rect.height;
-      const rx = (0.5 - py) * 6;
-      const ry = (px - 0.5) * 7;
-      card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "";
-    });
-  });
-
-  const webDemo = doc.getElementById("webLiveDemo");
-  if (webDemo && !prefersReducedMotion) {
-    const pointer = doc.getElementById("demoPointer");
-    const clickFx = doc.getElementById("demoClick");
-    const navItems = [...webDemo.querySelectorAll(".demo-nav-item")];
-    const targets = [...webDemo.querySelectorAll(".demo-target")];
-    const views = [...webDemo.querySelectorAll(".demo-view")];
-    const sequence = [...navItems, ...targets.slice(0, 6)];
-    let idx = 0;
-
-    function moveDemoPointer(targetEl) {
-      if (!pointer || !clickFx || !targetEl) return;
-      const demoRect = webDemo.getBoundingClientRect();
-      const rect = targetEl.getBoundingClientRect();
-      const x = rect.left - demoRect.left + rect.width * 0.52;
-      const y = rect.top - demoRect.top + rect.height * 0.52;
-
-      pointer.style.left = `${x}px`;
-      pointer.style.top = `${y}px`;
-
-      clickFx.style.left = `${x + 4}px`;
-      clickFx.style.top = `${y + 4}px`;
-      clickFx.classList.remove("pulse");
-      void clickFx.offsetWidth;
-      clickFx.classList.add("pulse");
-    }
-
-    function activateDemoItem(targetEl) {
-      if (!targetEl) return;
-      navItems.forEach((item) => item.classList.remove("active"));
-      targets.forEach((item) => item.classList.remove("is-clicked"));
-
-      if (targetEl.classList.contains("demo-nav-item")) {
-        targetEl.classList.add("active");
-        const view = targetEl.getAttribute("data-view");
-        views.forEach((section) => section.classList.toggle("active", section.getAttribute("data-view") === view));
-      }
-      if (targetEl.classList.contains("demo-target")) targetEl.classList.add("is-clicked");
-    }
-
-    moveDemoPointer(sequence[0]);
-    activateDemoItem(sequence[0]);
-
-    window.setInterval(() => {
-      const targetEl = sequence[idx % sequence.length];
-      moveDemoPointer(targetEl);
-      activateDemoItem(targetEl);
-      idx += 1;
-    }, 1250);
-  }
-
-  if (window.gsap && window.ScrollTrigger) {
-    gsap.registerPlugin(ScrollTrigger);
-
-    gsap.timeline({ defaults: { ease: "power3.out" } })
-      .from(".hero .tag", { y: 24, opacity: 0, duration: 0.7 })
-      .from(".hero h1", { y: 36, opacity: 0, duration: 0.95 }, "-=0.42")
-      .from(".hero-copy > p:not(.tag)", { y: 24, opacity: 0, duration: 0.82 }, "-=0.58")
-      .from(".hero-actions .btn", { y: 16, opacity: 0, duration: 0.64, stagger: 0.1, ease: "power2.out" }, "-=0.45")
-      .from(".hero-stats article", { y: 16, opacity: 0, duration: 0.58, stagger: 0.08, ease: "power2.out" }, "-=0.36")
-      .from(".hero-visual", { x: 30, opacity: 0, duration: 0.9 }, "-=0.9");
-
-    doc.querySelectorAll("[data-reveal]").forEach((node) => {
-      // Hero elements already have a dedicated intro timeline; skip shared reveal
-      // to avoid double-animation states that can hide the visual after load.
-      if (node.closest(".hero")) return;
-
-      const mode = node.getAttribute("data-reveal");
-      const from = { opacity: 0, y: 28 };
-      if (mode === "fade-left") from.x = 30;
-      if (mode === "fade-right") from.x = -30;
-      if (mode === "fade-up") from.y = 16;
-
-      gsap.fromTo(node, from, {
-        opacity: 1,
-        x: 0,
-        y: 0,
-        duration: 0.86,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: node,
-          start: "top 87%",
-          toggleActions: "play none none reverse"
-        }
-      });
-    });
-
-    gsap.utils.toArray(".bar-fill").forEach((bar) => {
-      const fill = Number(bar.getAttribute("data-fill") || 0);
-      gsap.to(bar, {
-        width: `${fill}%`,
-        duration: 1.2,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: bar,
-          start: "top 88%"
-        }
-      });
-    });
-  }
-
-  const counters = doc.querySelectorAll(".counter");
-  if (counters.length) {
-    const counterObserver = new IntersectionObserver(
-      (entries, obs) => {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          const el = entry.target;
-          const target = Number(el.getAttribute("data-target") || 0);
-          const start = performance.now();
-          const duration = 1200;
-
-          function tick(now) {
-            const progress = Math.min((now - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            el.textContent = String(Math.floor(target * eased));
-            if (progress < 1) requestAnimationFrame(tick);
-          }
-
-          requestAnimationFrame(tick);
-          obs.unobserve(el);
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.45 }
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
     );
 
-    counters.forEach((counter) => counterObserver.observe(counter));
+    revealTargets.forEach((element) => revealObserver.observe(element));
   }
 
-  const liveValues = doc.querySelectorAll(".live-value");
-  liveValues.forEach((node) => {
-    const start = Number(node.getAttribute("data-start") || 50);
-    const max = Number(node.getAttribute("data-max") || 95);
-    let value = start;
-    node.textContent = String(value);
+  const valueRail = doc.getElementById("valueRail");
+  const aboutVisual = doc.getElementById("aboutVisual");
+  const aboutImage = doc.getElementById("aboutValueImage");
+  const aboutTitle = doc.getElementById("aboutValueTitle");
+  const aboutText = doc.getElementById("aboutValueText");
+  const aboutList = doc.getElementById("aboutValueList");
 
-    window.setInterval(() => {
-      const delta = Math.random() > 0.5 ? 1 : -1;
-      value = Math.max(start - 6, Math.min(max, value + delta));
-      node.textContent = String(value);
-    }, 1300 + Math.floor(Math.random() * 700));
-  });
+  const aboutValues = {
+    innovative: {
+      title: "Innovate. Transform. Lead.",
+      text: "Every project maps to conversion, retention, and operational performance goals. We build premium digital ecosystems that turn business intent into execution.",
+      image: "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?auto=format&fit=crop&w=1600&q=80",
+      alt: "Solbasket innovative technology development workspace",
+      bullets: [
+        "Design conversion-focused digital experiences.",
+        "Develop secure and scalable technology platforms.",
+        "Enable teams with process intelligence and automation."
+      ]
+    },
+    authentic: {
+      title: "Authentic partnerships, clear execution.",
+      text: "We work as a true implementation partner with transparent communication, practical roadmaps, and strong ownership from discovery to release.",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
+      alt: "Team collaboration session representing authentic partnership",
+      bullets: [
+        "Milestone-based planning and accountability.",
+        "Business-first recommendations with practical scope.",
+        "Consistent reporting and collaborative decision making."
+      ]
+    },
+    disruptive: {
+      title: "Disruptive systems for serious growth.",
+      text: "Solbasket modernizes legacy workflows with automation, integration, and product engineering so teams can move faster with fewer bottlenecks.",
+      image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1600&q=80",
+      alt: "Advanced coding environment representing disruptive engineering",
+      bullets: [
+        "Automation across operations and approvals.",
+        "Integration-ready platforms with reliable APIs.",
+        "Performance architecture designed for scale."
+      ]
+    },
+    visionary: {
+      title: "Visionary strategy backed by data.",
+      text: "From KPI tracking to forecasting and campaign intelligence, we connect strategy with measurable outcomes and long-term digital direction.",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
+      alt: "Business intelligence dashboard for visionary strategy",
+      bullets: [
+        "Executive-ready dashboard systems.",
+        "Decision support with trend visibility.",
+        "Continuous optimization tied to business targets."
+      ]
+    }
+  };
 
-  const hero = doc.querySelector(".hero");
-  const heroCopy = doc.querySelector(".hero-copy");
-  if (hero && heroCopy && !prefersReducedMotion) {
-    let tx = 0;
-    let ty = 0;
-    let x = 0;
-    let y = 0;
+  function renderAboutValue(key) {
+    const value = aboutValues[key];
+    if (!value || !aboutImage || !aboutTitle || !aboutText || !aboutList) return;
 
-    hero.addEventListener("mousemove", (event) => {
-      const rect = hero.getBoundingClientRect();
-      tx = (event.clientX - rect.left - rect.width / 2) / rect.width;
-      ty = (event.clientY - rect.top - rect.height / 2) / rect.height;
+    if (aboutVisual) aboutVisual.classList.add("is-updating");
+
+    window.setTimeout(() => {
+      aboutImage.src = value.image;
+      aboutImage.alt = value.alt;
+      aboutTitle.textContent = value.title;
+      aboutText.textContent = value.text;
+      aboutList.innerHTML = value.bullets.map((item) => `<li>${item}</li>`).join("");
+      if (aboutVisual) aboutVisual.classList.remove("is-updating");
+    }, 120);
+  }
+
+  if (valueRail) {
+    const buttons = [...valueRail.querySelectorAll(".value-pill")];
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.getAttribute("data-value");
+        if (!key || !aboutValues[key]) return;
+
+        buttons.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle("active", isActive);
+          item.setAttribute("aria-selected", String(isActive));
+        });
+
+        renderAboutValue(key);
+      });
+    });
+  }
+
+  const servicePanels = [...doc.querySelectorAll(".service-panel")];
+  const serviceNavItems = [...doc.querySelectorAll(".services-nav-item")];
+  const servicesTrack = doc.getElementById("servicesTrack");
+  const serviceMetrics = { start: 0, range: 1 };
+  let currentServiceStep = "1";
+  let serviceTicking = false;
+
+  function setActiveService(step) {
+    if (!servicePanels.length || !serviceNavItems.length) return;
+
+    const normalizedStep = String(step);
+    let found = false;
+
+    servicePanels.forEach((panel, index) => {
+      const panelStep = panel.getAttribute("data-step") || String(index + 1);
+      const isActive = panelStep === normalizedStep;
+      panel.classList.toggle("active", isActive);
+      if (isActive) found = true;
     });
 
-    hero.addEventListener("mouseleave", () => {
-      tx = 0;
-      ty = 0;
+    serviceNavItems.forEach((item, index) => {
+      const itemStep = item.getAttribute("data-step") || String(index + 1);
+      const isActive = itemStep === normalizedStep;
+      item.classList.toggle("active", isActive);
+      item.setAttribute("aria-selected", String(isActive));
+      item.setAttribute("tabindex", isActive ? "0" : "-1");
     });
 
-    function animateHero() {
-      x += (tx - x) * 0.06;
-      y += (ty - y) * 0.06;
-      heroCopy.style.transform = `translate3d(${x * 10}px, ${y * 8}px, 0)`;
-      requestAnimationFrame(animateHero);
+    currentServiceStep = normalizedStep;
+
+    if (!found && servicePanels[0]) {
+      const fallbackStep = servicePanels[0].getAttribute("data-step") || "1";
+      if (fallbackStep !== normalizedStep) setActiveService(fallbackStep);
+    }
+  }
+
+  function isDesktopServiceScroll() {
+    return window.innerWidth > 920;
+  }
+
+  function getServiceIndex(step) {
+    const normalizedStep = String(step);
+    const index = servicePanels.findIndex((panel, i) => {
+      const panelStep = panel.getAttribute("data-step") || String(i + 1);
+      return panelStep === normalizedStep;
+    });
+    return index >= 0 ? index : 0;
+  }
+
+  function recalcServiceMetrics() {
+    if (!servicesTrack || !servicePanels.length) return;
+
+    if (!isDesktopServiceScroll()) {
+      servicesTrack.style.height = "auto";
+      serviceMetrics.start = 0;
+      serviceMetrics.range = 1;
+      return;
     }
 
-    animateHero();
+    servicesTrack.style.height = `${Math.max(520, servicePanels.length * 118)}vh`;
+    const rect = servicesTrack.getBoundingClientRect();
+    const absoluteTop = rect.top + window.scrollY;
+    const viewport = window.innerHeight;
+    const headerSpace = (header ? header.offsetHeight : 0) + 22;
+
+    serviceMetrics.start = absoluteTop - headerSpace;
+    serviceMetrics.range = Math.max(servicesTrack.offsetHeight - viewport * 0.86, 1);
   }
 
-  const form = doc.getElementById("contactForm");
-  const statusEl = doc.getElementById("formStatus");
-  if (form && statusEl) {
+  function getServiceStepFromScroll() {
+    if (!servicePanels.length) return "1";
+    const raw = (window.scrollY - serviceMetrics.start) / serviceMetrics.range;
+    const progress = Math.max(0, Math.min(1, raw));
+    const index = Math.min(servicePanels.length - 1, Math.floor(progress * servicePanels.length));
+    return String(index + 1);
+  }
+
+  function syncServiceFromScroll() {
+    if (!isDesktopServiceScroll() || !servicesTrack || !servicePanels.length) return;
+    const step = getServiceStepFromScroll();
+    if (step !== currentServiceStep) setActiveService(step);
+  }
+
+  function onServiceScroll() {
+    if (serviceTicking) return;
+    serviceTicking = true;
+    window.requestAnimationFrame(() => {
+      syncServiceFromScroll();
+      serviceTicking = false;
+    });
+  }
+
+  function goToService(step, behavior = "smooth") {
+    const normalizedStep = String(step);
+    if (!servicePanels.length) return;
+
+    if (!isDesktopServiceScroll() || !servicesTrack) {
+      setActiveService(normalizedStep);
+      return;
+    }
+
+    setActiveService(normalizedStep);
+    const index = getServiceIndex(normalizedStep);
+    const segment = serviceMetrics.range / servicePanels.length;
+    const target = serviceMetrics.start + (segment * index) + 2;
+    window.scrollTo({ top: target, behavior });
+  }
+
+  if (servicePanels.length && serviceNavItems.length) {
+    const initialStep =
+      serviceNavItems.find((item) => item.classList.contains("active"))?.getAttribute("data-step") ||
+      servicePanels.find((panel) => panel.classList.contains("active"))?.getAttribute("data-step") ||
+      servicePanels[0].getAttribute("data-step") ||
+      "1";
+
+    setActiveService(initialStep);
+    recalcServiceMetrics();
+    syncServiceFromScroll();
+
+    serviceNavItems.forEach((item, index) => {
+      item.addEventListener("click", () => {
+        const step = item.getAttribute("data-step") || String(index + 1);
+        goToService(step);
+      });
+
+      item.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+        event.preventDefault();
+
+        const direction = event.key === "ArrowDown" ? 1 : -1;
+        const nextIndex = (index + direction + serviceNavItems.length) % serviceNavItems.length;
+        const nextItem = serviceNavItems[nextIndex];
+        const nextStep = nextItem.getAttribute("data-step") || String(nextIndex + 1);
+
+        goToService(nextStep);
+        nextItem.focus();
+      });
+    });
+
+    window.addEventListener("scroll", onServiceScroll, { passive: true });
+    window.addEventListener("resize", () => {
+      recalcServiceMetrics();
+      syncServiceFromScroll();
+    });
+    window.addEventListener("load", () => {
+      recalcServiceMetrics();
+      syncServiceFromScroll();
+    });
+  }
+
+  if (form) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const submitBtn = form.querySelector(".submit-btn");
-      if (submitBtn) submitBtn.textContent = "Sending...";
+      if (!formStatus) return;
 
-      window.setTimeout(() => {
-        statusEl.textContent = "Message sent successfully. We will connect with you shortly.";
-        statusEl.classList.add("show");
-        if (submitBtn) submitBtn.textContent = "Request Sent";
-
-        window.setTimeout(() => {
-          form.reset();
-          if (submitBtn) submitBtn.textContent = "Send Proposal Request";
-        }, 900);
-      }, 700);
+      formStatus.textContent = "Thanks. Your request has been captured. We will contact you shortly.";
+      form.reset();
     });
   }
 })();
