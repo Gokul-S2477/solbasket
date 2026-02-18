@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+  <div class="darkveil-bg" aria-hidden="true">
+    <canvas id="darkVeilCanvas" class="darkveil-canvas"></canvas>
+  </div>
+
   <header class="site-header" id="top">
     <div class="container nav-shell">
       <a href="#home" class="brand" aria-label="Solbasket home">
@@ -31,6 +35,19 @@
         <a href="#contact">Contact Us</a>
       </nav>
 
+      <button
+        type="button"
+        class="theme-toggle"
+        id="themeToggle"
+        aria-label="Switch to dark mode"
+        aria-pressed="false"
+      >
+        <span class="theme-toggle-track" aria-hidden="true">
+          <span class="theme-toggle-knob"></span>
+        </span>
+        <span class="theme-toggle-text" data-theme-label>Dark</span>
+      </button>
+
       <a href="#contact" class="wa-btn" aria-label="Quick contact">WA</a>
     </div>
   </header>
@@ -38,6 +55,20 @@
   <main>
     <section class="section hero" id="home">
       <div class="container hero-card">
+        <div class="hero-lanyard-zone" aria-hidden="true">
+          <div class="hero-lanyard" id="heroLanyard">
+            <span class="lanyard-anchor"></span>
+            <span class="lanyard-strap left"></span>
+            <span class="lanyard-strap right"></span>
+            <article class="lanyard-card">
+              <span class="lanyard-card-chip"></span>
+              <img class="lanyard-logo" src="assets/images/solbasket_logo_transparent.png" alt="" />
+              <p class="lanyard-name">SOLBASKET</p>
+              <p class="lanyard-role">Digital Systems</p>
+            </article>
+          </div>
+        </div>
+
         <p class="kicker">Premium Conversion Engineering</p>
         <h1>Designing the future, one platform and one line of code at a time.</h1>
         <p class="lead">
@@ -117,6 +148,24 @@
               <button type="button" class="value-pill" data-value="authentic" role="tab" aria-selected="false">Authentic</button>
               <button type="button" class="value-pill" data-value="disruptive" role="tab" aria-selected="false">Disruptive</button>
               <button type="button" class="value-pill" data-value="visionary" role="tab" aria-selected="false">Visionary</button>
+            </div>
+
+            <div class="about-fillers" aria-label="Execution highlights">
+              <article class="about-fill-card">
+                <span class="about-fill-dot" aria-hidden="true"></span>
+                <h4>Execution Focused</h4>
+                <p>Sprint-based delivery with clear business milestones.</p>
+              </article>
+              <article class="about-fill-card">
+                <span class="about-fill-dot" aria-hidden="true"></span>
+                <h4>Quality Driven</h4>
+                <p>Clean, maintainable systems built for long-term growth.</p>
+              </article>
+              <article class="about-fill-card">
+                <span class="about-fill-dot" aria-hidden="true"></span>
+                <h4>Outcome Measured</h4>
+                <p>Every release is aligned with conversion and impact goals.</p>
+              </article>
             </div>
           </article>
 
@@ -340,8 +389,34 @@
           <a href="#contact" class="btn btn-dark">Get Started</a>
         </div>
 
-        <div class="community-visual" aria-hidden="true">
-          <img src="assets/images/ai-software-grid.svg" alt="" />
+        <div class="community-visual" data-ai-character-zone aria-hidden="true">
+          <div class="ai-buddy" id="aiBuddy">
+            <div class="ai-buddy-halo"></div>
+            <div class="ai-buddy-head">
+              <div class="ai-buddy-face">
+                <div class="ai-buddy-brows">
+                  <span class="ai-buddy-brow left"></span>
+                  <span class="ai-buddy-brow right"></span>
+                </div>
+                <div class="ai-buddy-eyes">
+                  <span class="ai-buddy-eye" data-eye>
+                    <span class="ai-buddy-pupil" data-pupil></span>
+                  </span>
+                  <span class="ai-buddy-eye" data-eye>
+                    <span class="ai-buddy-pupil" data-pupil></span>
+                  </span>
+                </div>
+                <span class="ai-buddy-mouth" data-mouth></span>
+                <span class="ai-buddy-cheek left"></span>
+                <span class="ai-buddy-cheek right"></span>
+              </div>
+            </div>
+            <div class="ai-buddy-body">
+              <span class="ai-buddy-arm left"></span>
+              <span class="ai-buddy-core"></span>
+              <span class="ai-buddy-arm right"></span>
+            </div>
+          </div>
         </div>
 
         <div class="community-copy right">
@@ -457,6 +532,8 @@
     </div>
   </footer>
 
+  <script src="assets/js/ai-scene.js" defer></script>
+  <script src="assets/js/dark-veil.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>

@@ -3,13 +3,66 @@
   const header = doc.querySelector(".site-header");
   const navLinks = doc.getElementById("navLinks");
   const menuToggle = doc.getElementById("menuToggle");
+  const themeToggle = doc.getElementById("themeToggle");
   const yearEl = doc.getElementById("year");
   const form = doc.getElementById("contactForm");
   const formStatus = doc.getElementById("formStatus");
   const HEADER_SCROLL_ENTER = 28;
   const HEADER_SCROLL_EXIT = 14;
+  const THEME_STORAGE_KEY = "solbasket-theme";
 
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+  function getInitialTheme() {
+    try {
+      const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+      if (saved === "dark" || saved === "light") return saved;
+    } catch (error) {
+      // Ignore storage access failures and continue with fallback.
+    }
+
+    const current = doc.documentElement.getAttribute("data-theme");
+    if (current === "dark" || current === "light") return current;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function updateThemeButton(theme) {
+    if (!themeToggle) return;
+    const isDark = theme === "dark";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+    const label = themeToggle.querySelector("[data-theme-label]");
+    if (label) label.textContent = isDark ? "Light" : "Dark";
+  }
+
+  function applyTheme(theme, persist = true) {
+    const nextTheme = theme === "dark" ? "dark" : "light";
+    doc.documentElement.setAttribute("data-theme", nextTheme);
+    updateThemeButton(nextTheme);
+
+    window.dispatchEvent(
+      new CustomEvent("solbasket:theme", {
+        detail: { theme: nextTheme }
+      })
+    );
+
+    if (persist) {
+      try {
+        window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+      } catch (error) {
+        // Ignore storage write failures.
+      }
+    }
+  }
+
+  applyTheme(getInitialTheme(), false);
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const currentTheme = doc.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      applyTheme(currentTheme === "dark" ? "light" : "dark");
+    });
+  }
 
   let headerScrolled = null;
   let headerTicking = false;
@@ -63,6 +116,103 @@
         menuToggle.setAttribute("aria-expanded", "false");
       }
     });
+  }
+
+  const navDockItems = navLinks ? [...navLinks.querySelectorAll("a")] : [];
+  if (navLinks && navDockItems.length) {
+    const DOCK_DISTANCE = 185;
+    const MAX_SCALE = 1.26;
+    const MAX_LIFT = 11;
+    const MAX_GLOW = 1;
+    let dockActive = false;
+    let dockPointerX = Number.POSITIVE_INFINITY;
+    let dockTicking = false;
+
+    function resetDock() {
+      navDockItems.forEach((item) => {
+        item.style.setProperty("--dock-scale", "1");
+        item.style.setProperty("--dock-lift", "0px");
+        item.style.setProperty("--dock-glow", "0");
+      });
+    }
+
+    function smoothStep(value) {
+      return value * value * (3 - (2 * value));
+    }
+
+    function syncDock() {
+      dockTicking = false;
+
+      if (!dockActive || window.innerWidth <= 920 || !Number.isFinite(dockPointerX)) {
+        resetDock();
+        return;
+      }
+
+      navDockItems.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const centerX = rect.left + (rect.width * 0.5);
+        const distance = Math.abs(dockPointerX - centerX);
+        const ratio = Math.max(0, 1 - (distance / DOCK_DISTANCE));
+        const influence = smoothStep(ratio);
+        const scale = 1 + (influence * (MAX_SCALE - 1));
+        const lift = -(influence * MAX_LIFT);
+
+        item.style.setProperty("--dock-scale", scale.toFixed(3));
+        item.style.setProperty("--dock-lift", `${lift.toFixed(2)}px`);
+        item.style.setProperty("--dock-glow", (influence * MAX_GLOW).toFixed(3));
+      });
+    }
+
+    function queueDockSync() {
+      if (dockTicking) return;
+      dockTicking = true;
+      window.requestAnimationFrame(syncDock);
+    }
+
+    navLinks.addEventListener(
+      "pointerenter",
+      (event) => {
+        if (window.innerWidth <= 920) return;
+        dockActive = true;
+        dockPointerX = event.clientX;
+        queueDockSync();
+      },
+      { passive: true }
+    );
+
+    navLinks.addEventListener(
+      "pointermove",
+      (event) => {
+        if (!dockActive || window.innerWidth <= 920) return;
+        dockPointerX = event.clientX;
+        queueDockSync();
+      },
+      { passive: true }
+    );
+
+    navLinks.addEventListener("pointerleave", () => {
+      dockActive = false;
+      dockPointerX = Number.POSITIVE_INFINITY;
+      queueDockSync();
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth <= 920) {
+        dockActive = false;
+        dockPointerX = Number.POSITIVE_INFINITY;
+      }
+      queueDockSync();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        dockActive = false;
+        dockPointerX = Number.POSITIVE_INFINITY;
+      }
+      queueDockSync();
+    });
+
+    resetDock();
   }
 
   doc.querySelectorAll("a[href^='#']").forEach((anchor) => {
@@ -213,9 +363,10 @@
   const servicePanels = [...doc.querySelectorAll(".service-panel")];
   const serviceNavItems = [...doc.querySelectorAll(".services-nav-item")];
   const servicesTrack = doc.getElementById("servicesTrack");
-  const serviceMetrics = { start: 0, range: 1 };
+  const serviceMetrics = { start: 0, range: 1, end: 1 };
   let currentServiceStep = "1";
   let serviceTicking = false;
+  let serviceResizeTicking = false;
 
   function setActiveService(step) {
     if (!servicePanels.length || !serviceNavItems.length) return;
@@ -266,6 +417,7 @@
       servicesTrack.style.height = "auto";
       serviceMetrics.start = 0;
       serviceMetrics.range = 1;
+      serviceMetrics.end = 1;
       return;
     }
 
@@ -277,6 +429,13 @@
 
     serviceMetrics.start = absoluteTop - headerSpace;
     serviceMetrics.range = Math.max(servicesTrack.offsetHeight - viewport * 0.86, 1);
+    serviceMetrics.end = serviceMetrics.start + serviceMetrics.range;
+  }
+
+  function isWithinServiceScrollRange() {
+    const viewportPad = window.innerHeight * 0.9;
+    const y = window.scrollY;
+    return y >= (serviceMetrics.start - viewportPad) && y <= (serviceMetrics.end + viewportPad);
   }
 
   function getServiceStepFromScroll() {
@@ -289,6 +448,7 @@
 
   function syncServiceFromScroll() {
     if (!isDesktopServiceScroll() || !servicesTrack || !servicePanels.length) return;
+    if (!isWithinServiceScrollRange()) return;
     const step = getServiceStepFromScroll();
     if (step !== currentServiceStep) setActiveService(step);
   }
@@ -299,6 +459,16 @@
     window.requestAnimationFrame(() => {
       syncServiceFromScroll();
       serviceTicking = false;
+    });
+  }
+
+  function onServiceResize() {
+    if (serviceResizeTicking) return;
+    serviceResizeTicking = true;
+    window.requestAnimationFrame(() => {
+      recalcServiceMetrics();
+      syncServiceFromScroll();
+      serviceResizeTicking = false;
     });
   }
 
@@ -350,14 +520,210 @@
     });
 
     window.addEventListener("scroll", onServiceScroll, { passive: true });
-    window.addEventListener("resize", () => {
-      recalcServiceMetrics();
-      syncServiceFromScroll();
-    });
+    window.addEventListener("resize", onServiceResize);
+    window.addEventListener("orientationchange", onServiceResize);
     window.addEventListener("load", () => {
       recalcServiceMetrics();
       syncServiceFromScroll();
     });
+  }
+
+  const heroCard = doc.querySelector(".hero-card");
+  const heroLanyard = doc.getElementById("heroLanyard");
+  const lanyardCard = heroLanyard?.querySelector(".lanyard-card");
+  if (heroCard && heroLanyard && lanyardCard) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const BASE_ANCHOR_Y = 18;
+    const LEFT_ANCHOR_X = -18;
+    const RIGHT_ANCHOR_X = 16;
+    const ATTACH_OFFSET_X = 28;
+    const ATTACH_OFFSET_Y = 2;
+    const LIMIT_X = 154;
+    const LIMIT_Y_MIN = -26;
+    const LIMIT_Y_MAX = 214;
+
+    const lanyardState = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      angle: -2,
+      av: 0,
+      targetX: 0,
+      targetY: 0,
+      dragging: false,
+      pointerId: null,
+      grabOffsetX: 0,
+      grabOffsetY: 0
+    };
+
+    let lanyardFrame = 0;
+    let lanyardInView = true;
+    let lanyardRunning = false;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function rotatePoint(x, y, radians) {
+      const cos = Math.cos(radians);
+      const sin = Math.sin(radians);
+      return { x: (x * cos) - (y * sin), y: (x * sin) + (y * cos) };
+    }
+
+    function getCardTop() {
+      const top = Number.parseFloat(window.getComputedStyle(lanyardCard).top);
+      return Number.isFinite(top) ? top : 92;
+    }
+
+    function updateLanyardStyles() {
+      const cardTop = getCardTop();
+      const angleRad = (lanyardState.angle * Math.PI) / 180;
+      const leftAttach = rotatePoint(-ATTACH_OFFSET_X, ATTACH_OFFSET_Y, angleRad);
+      const rightAttach = rotatePoint(ATTACH_OFFSET_X, ATTACH_OFFSET_Y, angleRad);
+
+      const leftX = lanyardState.x + leftAttach.x;
+      const leftY = cardTop + lanyardState.y + leftAttach.y;
+      const rightX = lanyardState.x + rightAttach.x;
+      const rightY = cardTop + lanyardState.y + rightAttach.y;
+
+      const leftDx = leftX - LEFT_ANCHOR_X;
+      const leftDy = leftY - BASE_ANCHOR_Y;
+      const rightDx = rightX - RIGHT_ANCHOR_X;
+      const rightDy = rightY - BASE_ANCHOR_Y;
+
+      const leftLength = clamp(Math.hypot(leftDx, leftDy), 50, 306);
+      const rightLength = clamp(Math.hypot(rightDx, rightDy), 50, 306);
+      const leftAngle = (Math.atan2(leftDy, leftDx) * (180 / Math.PI)) - 90;
+      const rightAngle = (Math.atan2(rightDy, rightDx) * (180 / Math.PI)) - 90;
+
+      heroLanyard.style.setProperty("--lanyard-x", `${lanyardState.x.toFixed(2)}px`);
+      heroLanyard.style.setProperty("--lanyard-y", `${lanyardState.y.toFixed(2)}px`);
+      heroLanyard.style.setProperty("--lanyard-card-rotate", `${lanyardState.angle.toFixed(2)}deg`);
+      heroLanyard.style.setProperty("--lanyard-shadow-x", `${(lanyardState.angle * 0.28).toFixed(2)}px`);
+      heroLanyard.style.setProperty("--lanyard-shadow-y", `${(16 + Math.abs(lanyardState.angle * 0.22) + Math.abs(lanyardState.y * 0.06)).toFixed(2)}px`);
+      heroLanyard.style.setProperty("--strap-left-length", `${leftLength.toFixed(2)}px`);
+      heroLanyard.style.setProperty("--strap-right-length", `${rightLength.toFixed(2)}px`);
+      heroLanyard.style.setProperty("--strap-left-angle", `${leftAngle.toFixed(2)}deg`);
+      heroLanyard.style.setProperty("--strap-right-angle", `${rightAngle.toFixed(2)}deg`);
+    }
+
+    function updateDragTarget(event) {
+      if (!lanyardState.dragging || event.pointerId !== lanyardState.pointerId) return;
+      const zoneRect = heroLanyard.getBoundingClientRect();
+      const baseCenterX = zoneRect.left + (zoneRect.width * 0.5);
+      const baseCenterY = zoneRect.top + getCardTop();
+
+      const desiredX = event.clientX - lanyardState.grabOffsetX - baseCenterX;
+      const desiredY = event.clientY - lanyardState.grabOffsetY - baseCenterY;
+      lanyardState.targetX = clamp(desiredX, -LIMIT_X, LIMIT_X);
+      lanyardState.targetY = clamp(desiredY, LIMIT_Y_MIN, LIMIT_Y_MAX);
+    }
+
+    function endDrag(event) {
+      if (!lanyardState.dragging) return;
+      if (event && lanyardState.pointerId !== null && event.pointerId !== lanyardState.pointerId) return;
+
+      if (event && lanyardCard.releasePointerCapture) {
+        try {
+          lanyardCard.releasePointerCapture(event.pointerId);
+        } catch (error) {
+          // Ignore release errors when capture was already cleared.
+        }
+      }
+
+      lanyardState.dragging = false;
+      lanyardState.pointerId = null;
+      lanyardState.targetX = clamp(lanyardState.targetX * 0.35, -38, 38);
+      lanyardState.targetY = 0;
+      heroLanyard.classList.remove("is-dragging");
+    }
+
+    function startLanyardLoop() {
+      if (lanyardRunning) return;
+      lanyardRunning = true;
+      lanyardFrame = window.requestAnimationFrame(animateLanyard);
+    }
+
+    function stopLanyardLoop() {
+      if (!lanyardRunning) return;
+      lanyardRunning = false;
+      if (lanyardFrame) window.cancelAnimationFrame(lanyardFrame);
+      lanyardFrame = 0;
+    }
+
+    function syncLanyardState() {
+      if (lanyardInView && !document.hidden) startLanyardLoop();
+      else stopLanyardLoop();
+    }
+
+    function animateLanyard(now = 0) {
+      if (!lanyardRunning) return;
+
+      if (!lanyardState.dragging) {
+        const idleX = Math.sin(now * 0.00055) * (reduceMotion ? 0.6 : 2.8);
+        const idleY = Math.cos((now * 0.00046) + 0.9) * (reduceMotion ? 0.3 : 1.2);
+        lanyardState.targetX += (idleX - lanyardState.targetX) * 0.03;
+        lanyardState.targetY += (idleY - lanyardState.targetY) * 0.03;
+      }
+
+      const springX = lanyardState.dragging ? 0.3 : (reduceMotion ? 0.045 : 0.062);
+      const springY = lanyardState.dragging ? 0.28 : (reduceMotion ? 0.04 : 0.056);
+      const damping = lanyardState.dragging ? 0.8 : (reduceMotion ? 0.9 : 0.94);
+
+      lanyardState.vx += (lanyardState.targetX - lanyardState.x) * springX;
+      lanyardState.vy += (lanyardState.targetY - lanyardState.y) * springY;
+      lanyardState.vx *= damping;
+      lanyardState.vy *= damping;
+      lanyardState.x += lanyardState.vx;
+      lanyardState.y += lanyardState.vy;
+
+      const idleAngle = -2 + (Math.sin(now * 0.00072) * (reduceMotion ? 0.4 : 1.15));
+      const angleTarget = lanyardState.dragging
+        ? clamp((lanyardState.x * 0.12) + (lanyardState.vx * 4.4), -28, 28)
+        : clamp(idleAngle + (lanyardState.x * 0.08) + (lanyardState.vx * 3.2), -18, 18);
+      lanyardState.av += (angleTarget - lanyardState.angle) * (lanyardState.dragging ? 0.24 : 0.14);
+      lanyardState.av *= lanyardState.dragging ? 0.78 : 0.84;
+      lanyardState.angle += lanyardState.av;
+
+      updateLanyardStyles();
+
+      lanyardFrame = window.requestAnimationFrame(animateLanyard);
+    }
+
+    lanyardCard.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      const cardRect = lanyardCard.getBoundingClientRect();
+      lanyardState.dragging = true;
+      lanyardState.pointerId = event.pointerId;
+      lanyardState.grabOffsetX = event.clientX - (cardRect.left + (cardRect.width * 0.5));
+      lanyardState.grabOffsetY = event.clientY - (cardRect.top + 14);
+      heroLanyard.classList.add("is-dragging");
+      if (lanyardCard.setPointerCapture) lanyardCard.setPointerCapture(event.pointerId);
+      event.preventDefault();
+    });
+
+    window.addEventListener("pointermove", updateDragTarget, { passive: true });
+    window.addEventListener("pointerup", endDrag, { passive: true });
+    window.addEventListener("pointercancel", endDrag, { passive: true });
+    window.addEventListener("blur", () => {
+      endDrag();
+    });
+
+    if ("IntersectionObserver" in window) {
+      const lanyardObserver = new IntersectionObserver(
+        (entries) => {
+          lanyardInView = entries.some((entry) => entry.isIntersecting);
+          syncLanyardState();
+        },
+        { threshold: 0.08 }
+      );
+      lanyardObserver.observe(heroCard);
+    }
+
+    updateLanyardStyles();
+    syncLanyardState();
+    document.addEventListener("visibilitychange", syncLanyardState);
   }
 
   if (form) {
